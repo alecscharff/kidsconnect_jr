@@ -65,6 +65,7 @@ export function useGameState() {
   const [gameStatus, setGameStatus] = useState('playing')
   const [toast, setToast] = useState(null)
   const [previousGuesses, setPreviousGuesses] = useState([])
+  const [showModal, setShowModal] = useState(false)
 
   // Initialize game
   const initializeGame = useCallback(() => {
@@ -75,6 +76,7 @@ export function useGameState() {
     setSolvedCategories([])
     setMistakes(0)
     setPreviousGuesses([])
+    setShowModal(false)
     setGameStatus('playing')
     setToast(null)
   }, [])
@@ -137,9 +139,12 @@ export function useGameState() {
       
       setTiles(prev => prev.filter(t => !selectedTiles.includes(t.id)))
       setSolvedCategories(prev => {
-        const newSolved = [...prev, solved].sort((a, b) => a.difficulty - b.difficulty)
+        const newSolved = [...prev, solved]
         if (newSolved.length === 4) {
-          setTimeout(() => setGameStatus('won'), 500)
+          setTimeout(() => {
+            setGameStatus('won')
+            setShowModal(true)
+          }, 500)
         }
         return newSolved
       })
@@ -156,20 +161,27 @@ export function useGameState() {
       setSelectedTiles([])
 
       if (newMistakes >= MAX_MISTAKES) {
-        const remaining = gameCategories.filter(
-          c => !solvedCategories.find(s => s.categoryName === c.categoryName)
-        )
-        setSolvedCategories(prev => 
-          [...prev, ...remaining].sort((a, b) => a.difficulty - b.difficulty)
-        )
+        const remaining = gameCategories
+          .filter(c => !solvedCategories.find(s => s.categoryName === c.categoryName))
+          .sort((a, b) => a.difficulty - b.difficulty)
+        setSolvedCategories(prev => [...prev, ...remaining])
         setTiles([])
-        setTimeout(() => setGameStatus('lost'), 500)
+        setTimeout(() => {
+          setGameStatus('lost')
+          setShowModal(true)
+        }, 500)
       }
     }
   }, [selectedTiles, tiles, gameCategories, solvedCategories, mistakes, gameStatus, previousGuesses])
 
   // Dismiss toast
   const dismissToast = useCallback(() => setToast(null), [])
+
+  // Dismiss modal (to view completed board)
+  const dismissModal = useCallback(() => setShowModal(false), [])
+
+  // Show modal again
+  const openModal = useCallback(() => setShowModal(true), [])
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -186,11 +198,14 @@ export function useGameState() {
     mistakes,
     gameStatus,
     toast,
+    showModal,
     selectTile,
     deselectAll,
     shuffle,
     submitGuess,
     resetGame: initializeGame,
     dismissToast,
+    dismissModal,
+    openModal,
   }
 }

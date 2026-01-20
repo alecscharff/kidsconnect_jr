@@ -7,7 +7,7 @@ const colorClasses = {
   purple: 'bg-solved-purple',
 }
 
-function GameOverModal({ status, onPlayAgain, solvedCategories }) {
+function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
   const isWin = status === 'won'
 
   return (
@@ -16,7 +16,7 @@ function GameOverModal({ status, onPlayAgain, solvedCategories }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
-      onClick={onPlayAgain}
+      onClick={onDismiss}
     >
       <motion.div
         initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
@@ -52,21 +52,38 @@ function GameOverModal({ status, onPlayAgain, solvedCategories }) {
           ))}
         </div>
 
-        <motion.button
-          onClick={onPlayAgain}
-          whileTap={{ scale: 0.9 }}
-          whileHover={{ scale: 1.05 }}
-          className="
-            w-full py-4 rounded-2xl
-            bg-gradient-to-r from-green-400 to-blue-500
-            text-white text-3xl
-            font-bold
-            shadow-lg
-            flex items-center justify-center gap-2
-          "
-        >
-          🔄 <span className="text-2xl">Play Again!</span> 🎮
-        </motion.button>
+        <div className="space-y-3">
+          <motion.button
+            onClick={onPlayAgain}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            className="
+              w-full py-4 rounded-2xl
+              bg-gradient-to-r from-green-400 to-blue-500
+              text-white text-3xl
+              font-bold
+              shadow-lg
+              flex items-center justify-center gap-2
+            "
+          >
+            🔄 <span className="text-2xl">Play Again!</span> 🎮
+          </motion.button>
+          <motion.button
+            onClick={onDismiss}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            className="
+              w-full py-3 rounded-2xl
+              bg-white text-gray-700 text-2xl
+              font-bold
+              border-3 border-gray-300
+              shadow-md
+              flex items-center justify-center gap-2
+            "
+          >
+            👀 <span className="text-xl">View Board</span> 🧩
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   )
