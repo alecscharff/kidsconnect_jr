@@ -1,33 +1,33 @@
 import { motion } from 'framer-motion'
 
 function Tile({ tile, isSelected, onClick, disabled }) {
+  const baseClasses = `
+    aspect-square w-full rounded-2xl
+    text-4xl sm:text-5xl md:text-6xl
+    flex items-center justify-center
+    transition-all duration-150
+    select-none cursor-pointer
+    shadow-lg
+  `
+  
+  const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : ''
+  const selectedClasses = isSelected
+    ? 'bg-tile-selected scale-95 shadow-inner'
+    : 'bg-white hover:scale-105 hover:shadow-xl active:scale-95'
+
   return (
     <motion.button
       onClick={() => !disabled && onClick(tile.id)}
       disabled={disabled}
-      className={`
-        aspect-square w-full rounded-lg font-display font-bold
-        text-sm sm:text-base md:text-lg
-        flex items-center justify-center text-center
-        p-1 sm:p-2
-        transition-colors duration-150
-        select-none cursor-pointer
-        ${disabled ? 'cursor-not-allowed opacity-50' : ''}
-        ${
-          isSelected
-            ? 'bg-tile-selected text-white'
-            : 'bg-tile-unselected text-gray-800 hover:bg-gray-300'
-        }
-      `}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      whileTap={{ scale: 0.95 }}
+      className={`${baseClasses} ${disabledClasses} ${selectedClasses}`}
+      initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
+      whileTap={{ scale: 0.9 }}
       layout
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
-      <span className="break-words leading-tight px-1">
-        {tile.word}
-      </span>
+      <span>{tile.emoji}</span>
     </motion.button>
   )
 }

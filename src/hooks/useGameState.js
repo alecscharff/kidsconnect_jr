@@ -1,80 +1,96 @@
 import { useState, useEffect, useCallback } from 'react'
-import {
-  loadPuzzleData,
-  selectRandomPuzzle,
-  createTilesFromCategories,
-  shuffleArray,
-} from '../utils/csvParser'
+import { PUZZLES, DIFFICULTY_COLORS } from '../data/puzzles'
 
 const MAX_MISTAKES = 4
 
+// Shuffle array using Fisher-Yates
+function shuffleArray(array) {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+// Select one random puzzle from each difficulty level
+function selectRandomPuzzles() {
+  const byDifficulty = { 1: [], 2: [], 3: [], 4: [] }
+  
+  PUZZLES.forEach(puzzle => {
+    if (byDifficulty[puzzle.difficulty]) {
+      byDifficulty[puzzle.difficulty].push(puzzle)
+    }
+  })
+
+  const selected = []
+  for (let d = 1; d <= 4; d++) {
+    const pool = byDifficulty[d]
+    if (pool.length > 0) {
+      const idx = Math.floor(Math.random() * pool.length)
+      selected.push({
+        ...pool[idx],
+        color: DIFFICULTY_COLORS[d],
+      })
+    }
+  }
+
+  return selected
+}
+
+// Create tiles from categories
+function createTiles(categories) {
+  const tiles = []
+  categories.forEach(cat => {
+    cat.items.forEach(emoji => {
+      tiles.push({
+        id: `${cat.categoryName}-${emoji}`,
+        emoji,
+        categoryName: cat.categoryName,
+        categoryEmoji: cat.categoryEmoji,
+        difficulty: cat.difficulty,
+        color: cat.color,
+      })
+    })
+  })
+  return tiles
+}
+
 export function useGameState() {
-  const [allCategories, setAllCategories] = useState([])
   const [gameCategories, setGameCategories] = useState([])
   const [tiles, setTiles] = useState([])
   const [selectedTiles, setSelectedTiles] = useState([])
   const [solvedCategories, setSolvedCategories] = useState([])
   const [mistakes, setMistakes] = useState(0)
-  const [gameStatus, setGameStatus] = useState('loading') // 'loading', 'playing', 'won', 'lost'
+  const [gameStatus, setGameStatus] = useState('playing')
   const [toast, setToast] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [previousGuesses, setPreviousGuesses] = useState([])
 
-  // Load puzzle data on mount
+  // Initialize game
+  const initializeGame = useCallback(() => {
+    const selected = selectRandomPuzzles()
+    setGameCategories(selected)
+    setTiles(shuffleArray(createTiles(selected)))
+    setSelectedTiles([])
+    setSolvedCategories([])
+    setMistakes(0)
+    setPreviousGuesses([])
+    setGameStatus('playing')
+    setToast(null)
+  }, [])
+
+  // Start game on mount
   useEffect(() => {
-    loadPuzzleData()
-      .then((categories) => {
-        setAllCategories(categories)
-        initializeGame(categories)
-      })
-      .catch((err) => {
-        setError(err.message)
-        setIsLoading(false)
-      })
-  }, [])
-
-  // Initialize a new game with random categories
-  const initializeGame = useCallback((categories) => {
-    try {
-      const selected = selectRandomPuzzle(categories)
-      setGameCategories(selected)
-
-      const newTiles = createTilesFromCategories(selected)
-      setTiles(shuffleArray(newTiles))
-
-      setSelectedTiles([])
-      setSolvedCategories([])
-      setMistakes(0)
-      setPreviousGuesses([])
-      setGameStatus('playing')
-      setIsLoading(false)
-      setError(null)
-    } catch (err) {
-      setError(err.message)
-      setIsLoading(false)
-    }
-  }, [])
-
-  // Reset the game
-  const resetGame = useCallback(() => {
-    if (allCategories.length > 0) {
-      setIsLoading(true)
-      setTimeout(() => {
-        initializeGame(allCategories)
-      }, 300)
-    }
-  }, [allCategories, initializeGame])
+    initializeGame()
+  }, [initializeGame])
 
   // Select/deselect a tile
   const selectTile = useCallback((tileId) => {
     if (gameStatus !== 'playing') return
 
-    setSelectedTiles((prev) => {
-      const isSelected = prev.includes(tileId)
-
-      if (isSelected) {
-        return prev.filter((id) => id !== tileId)
+    setSelectedTiles(prev => {
+      if (prev.includes(tileId)) {
+        return prev.filter(id => id !== tileId)
       } else {
         if (prev.length >= 4) return prev
         return [...prev, tileId]
@@ -82,91 +98,70 @@ export function useGameState() {
     })
   }, [gameStatus])
 
-  // Deselect all tiles
+  // Deselect all
   const deselectAll = useCallback(() => {
     setSelectedTiles([])
   }, [])
 
-  // Shuffle remaining tiles
+  // Shuffle tiles
   const shuffle = useCallback(() => {
-    setTiles((prev) => shuffleArray([...prev]))
+    setTiles(prev => shuffleArray([...prev]))
   }, [])
 
-  // Submit a guess
+  // Submit guess
   const submitGuess = useCallback(() => {
     if (selectedTiles.length !== 4 || gameStatus !== 'playing') return
 
-    // Get the selected tile objects
-    const selectedTileObjects = tiles.filter((t) => selectedTiles.includes(t.id))
-
-    // Check if this guess was already made
+    const selectedObjects = tiles.filter(t => selectedTiles.includes(t.id))
+    
+    // Check for duplicate guess
     const guessKey = [...selectedTiles].sort().join(',')
     if (previousGuesses.includes(guessKey)) {
-      setToast('Already guessed!')
+      setToast('🔄')
       return
     }
-    setPreviousGuesses((prev) => [...prev, guessKey])
+    setPreviousGuesses(prev => [...prev, guessKey])
 
-    // Count how many tiles belong to each category
+    // Count categories
     const categoryCount = {}
-    selectedTileObjects.forEach((tile) => {
+    selectedObjects.forEach(tile => {
       categoryCount[tile.categoryName] = (categoryCount[tile.categoryName] || 0) + 1
     })
 
-    // Check if all 4 tiles are from the same category
     const categories = Object.keys(categoryCount)
     const maxCount = Math.max(...Object.values(categoryCount))
 
     if (categories.length === 1 && maxCount === 4) {
-      // Correct guess!
-      const solvedCategory = gameCategories.find(
-        (c) => c.name === categories[0]
-      )
-
-      // Remove solved tiles from the board
-      setTiles((prev) => prev.filter((t) => !selectedTiles.includes(t.id)))
-
-      // Add to solved categories
-      setSolvedCategories((prev) => {
-        const newSolved = [...prev, solvedCategory].sort(
-          (a, b) => a.difficulty - b.difficulty
-        )
-
-        // Check for win
+      // Correct!
+      const solved = gameCategories.find(c => c.categoryName === categories[0])
+      
+      setTiles(prev => prev.filter(t => !selectedTiles.includes(t.id)))
+      setSolvedCategories(prev => {
+        const newSolved = [...prev, solved].sort((a, b) => a.difficulty - b.difficulty)
         if (newSolved.length === 4) {
           setTimeout(() => setGameStatus('won'), 500)
         }
-
         return newSolved
       })
-
-      // Clear selection
       setSelectedTiles([])
     } else {
-      // Incorrect guess
+      // Wrong
       const newMistakes = mistakes + 1
       setMistakes(newMistakes)
 
-      // Check if "one away"
       if (maxCount === 3) {
-        setToast('One away...')
+        setToast('☝️')
       }
 
-      // Clear selection
       setSelectedTiles([])
 
-      // Check for loss
       if (newMistakes >= MAX_MISTAKES) {
-        // Reveal all remaining categories
-        const remainingCategories = gameCategories.filter(
-          (c) => !solvedCategories.find((s) => s.name === c.name)
+        const remaining = gameCategories.filter(
+          c => !solvedCategories.find(s => s.categoryName === c.categoryName)
         )
-        setSolvedCategories((prev) => {
-          const allCategories = [...prev, ...remainingCategories].sort(
-            (a, b) => a.difficulty - b.difficulty
-          )
-          return allCategories
-        })
+        setSolvedCategories(prev => 
+          [...prev, ...remaining].sort((a, b) => a.difficulty - b.difficulty)
+        )
         setTiles([])
         setTimeout(() => setGameStatus('lost'), 500)
       }
@@ -174,16 +169,12 @@ export function useGameState() {
   }, [selectedTiles, tiles, gameCategories, solvedCategories, mistakes, gameStatus, previousGuesses])
 
   // Dismiss toast
-  const dismissToast = useCallback(() => {
-    setToast(null)
-  }, [])
+  const dismissToast = useCallback(() => setToast(null), [])
 
-  // Auto-dismiss toast after 2 seconds
+  // Auto-dismiss toast
   useEffect(() => {
     if (toast) {
-      const timer = setTimeout(() => {
-        setToast(null)
-      }, 2000)
+      const timer = setTimeout(() => setToast(null), 1500)
       return () => clearTimeout(timer)
     }
   }, [toast])
@@ -195,13 +186,11 @@ export function useGameState() {
     mistakes,
     gameStatus,
     toast,
-    isLoading,
-    error,
     selectTile,
     deselectAll,
     shuffle,
     submitGuess,
-    resetGame,
+    resetGame: initializeGame,
     dismissToast,
   }
 }

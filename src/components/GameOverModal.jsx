@@ -1,5 +1,12 @@
 import { motion } from 'framer-motion'
 
+const colorClasses = {
+  yellow: 'bg-solved-yellow',
+  green: 'bg-solved-green',
+  blue: 'bg-solved-blue',
+  purple: 'bg-solved-purple',
+}
+
 function GameOverModal({ status, onPlayAgain, solvedCategories }) {
   const isWin = status === 'won'
 
@@ -8,65 +15,57 @@ function GameOverModal({ status, onPlayAgain, solvedCategories }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
       onClick={onPlayAgain}
     >
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl"
+        initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        exit={{ scale: 0.5, opacity: 0, rotate: 10 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Emoji */}
-        <div className="text-5xl sm:text-6xl mb-4">
+        <motion.div 
+          className="text-7xl sm:text-8xl mb-4"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: isWin ? [0, 10, -10, 0] : [0, -5, 5, 0]
+          }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        >
           {isWin ? '🎉' : '😢'}
+        </motion.div>
+
+        <div className="text-4xl mb-6">
+          {isWin ? '⭐ 🌟 ⭐' : '💪 🔄 💪'}
         </div>
 
-        {/* Title */}
-        <h2 className="font-display font-extrabold text-2xl sm:text-3xl text-gray-800 mb-2">
-          {isWin ? 'Great Job!' : 'Game Over'}
-        </h2>
-
-        {/* Subtitle */}
-        <p className="font-display text-gray-600 mb-6">
-          {isWin
-            ? 'You found all the connections!'
-            : "Better luck next time!"}
-        </p>
-
-        {/* Categories Summary */}
         <div className="mb-6 space-y-2">
           {solvedCategories.map((cat) => (
             <div
-              key={cat.name}
-              className={`
-                rounded-lg py-2 px-3 text-sm font-display font-semibold text-gray-900
-                ${cat.color === 'yellow' ? 'bg-solved-yellow' : ''}
-                ${cat.color === 'green' ? 'bg-solved-green' : ''}
-                ${cat.color === 'blue' ? 'bg-solved-blue' : ''}
-                ${cat.color === 'purple' ? 'bg-solved-purple' : ''}
-              `}
+              key={cat.categoryName}
+              className={`rounded-xl py-2 px-3 text-2xl ${colorClasses[cat.color] || ''}`}
             >
-              {cat.name}
+              {cat.categoryEmoji} {cat.items.join(' ')}
             </div>
           ))}
         </div>
 
-        {/* Play Again Button */}
         <motion.button
           onClick={onPlayAgain}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
           className="
-            w-full py-3 rounded-full
-            bg-gray-800 text-white
-            font-display font-bold text-base sm:text-lg
-            hover:bg-gray-700 active:bg-gray-900
-            transition-colors
+            w-full py-4 rounded-2xl
+            bg-gradient-to-r from-green-400 to-blue-500
+            text-white text-3xl
+            font-bold
+            shadow-lg
+            flex items-center justify-center gap-2
           "
         >
-          Play Again
+          🔄 <span className="text-2xl">Play Again!</span> 🎮
         </motion.button>
       </motion.div>
     </motion.div>

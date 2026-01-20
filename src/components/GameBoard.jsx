@@ -4,7 +4,6 @@ import Tile from './Tile'
 function GameBoard({ tiles, selectedTiles, onTileClick, gameStatus }) {
   const isDisabled = gameStatus !== 'playing'
 
-  // Create a grid layout with proper spacing
   return (
     <motion.div
       className="w-full grid grid-cols-4 gap-2 sm:gap-3"

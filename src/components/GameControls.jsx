@@ -10,65 +10,56 @@ function GameControls({
 }) {
   const isDisabled = gameStatus !== 'playing'
 
+  const buttonBase = `
+    w-16 h-16 sm:w-20 sm:h-20 rounded-full
+    text-3xl sm:text-4xl
+    flex items-center justify-center
+    shadow-lg
+    transition-all duration-150
+  `
+
+  const getButtonClasses = (extraDisabled = false) => {
+    if (isDisabled || extraDisabled) {
+      return `${buttonBase} opacity-50 cursor-not-allowed bg-white/50`
+    }
+    return `${buttonBase} bg-white hover:scale-110 hover:shadow-xl active:scale-95`
+  }
+
   return (
-    <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 w-full">
-      {/* Shuffle Button */}
+    <div className="flex justify-center gap-3 sm:gap-4 mt-4 sm:mt-6 w-full">
       <motion.button
         onClick={onShuffle}
         disabled={isDisabled}
-        whileTap={{ scale: 0.95 }}
-        className={`
-          px-4 sm:px-6 py-2 sm:py-2.5 rounded-full
-          font-display font-semibold text-sm sm:text-base
-          border-2 border-gray-800
-          transition-all duration-150
-          ${
-            isDisabled
-              ? 'opacity-50 cursor-not-allowed bg-white text-gray-800'
-              : 'bg-white text-gray-800 hover:bg-gray-100 active:bg-gray-200'
-          }
-        `}
+        whileTap={{ scale: 0.9, rotate: 180 }}
+        className={getButtonClasses()}
+        title="Shuffle"
       >
-        Shuffle
+        🔀
       </motion.button>
 
-      {/* Deselect All Button */}
       <motion.button
         onClick={onDeselectAll}
         disabled={isDisabled || !canDeselect}
-        whileTap={{ scale: 0.95 }}
-        className={`
-          px-4 sm:px-6 py-2 sm:py-2.5 rounded-full
-          font-display font-semibold text-sm sm:text-base
-          border-2 border-gray-800
-          transition-all duration-150
-          ${
-            isDisabled || !canDeselect
-              ? 'opacity-50 cursor-not-allowed bg-white text-gray-800'
-              : 'bg-white text-gray-800 hover:bg-gray-100 active:bg-gray-200'
-          }
-        `}
+        whileTap={{ scale: 0.9 }}
+        className={getButtonClasses(!canDeselect)}
+        title="Clear"
       >
-        Deselect All
+        ❌
       </motion.button>
 
-      {/* Submit Button */}
       <motion.button
         onClick={onSubmit}
         disabled={isDisabled || !canSubmit}
-        whileTap={{ scale: 0.95 }}
-        className={`
-          px-6 sm:px-8 py-2 sm:py-2.5 rounded-full
-          font-display font-bold text-sm sm:text-base
-          transition-all duration-150
-          ${
-            isDisabled || !canSubmit
-              ? 'opacity-50 cursor-not-allowed bg-gray-400 text-white border-2 border-gray-400'
-              : 'bg-gray-800 text-white border-2 border-gray-800 hover:bg-gray-700 active:bg-gray-900'
-          }
-        `}
+        whileTap={{ scale: 0.9 }}
+        animate={canSubmit ? { scale: [1, 1.1, 1] } : {}}
+        transition={{ repeat: canSubmit ? Infinity : 0, duration: 1 }}
+        className={canSubmit && !isDisabled
+          ? `${buttonBase} bg-green-400 hover:scale-110 hover:shadow-xl active:scale-95`
+          : `${buttonBase} opacity-50 cursor-not-allowed bg-white/50`
+        }
+        title="Check"
       >
-        Submit
+        ✅
       </motion.button>
     </div>
   )

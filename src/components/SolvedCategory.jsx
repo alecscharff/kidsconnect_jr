@@ -15,18 +15,21 @@ function SolvedCategory({ category }) {
       initial={{ opacity: 0, y: -20, scaleY: 0 }}
       animate={{ opacity: 1, y: 0, scaleY: 1 }}
       exit={{ opacity: 0, y: -20, scaleY: 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
       className={`
         ${bgColor}
-        rounded-lg p-3 sm:p-4 mb-2
+        rounded-2xl p-3 mb-2
         text-center
+        shadow-lg
       `}
     >
-      <div className="font-display font-bold text-gray-900 text-sm sm:text-base uppercase tracking-wide">
-        {category.name}
+      <div className="text-3xl sm:text-4xl mb-1">
+        {category.categoryEmoji}
       </div>
-      <div className="font-display text-gray-800 text-xs sm:text-sm mt-1">
-        {category.words.join(', ')}
+      <div className="text-2xl sm:text-3xl flex justify-center gap-2">
+        {category.items.map((emoji, idx) => (
+          <span key={idx}>{emoji}</span>
+        ))}
       </div>
     </motion.div>
   )
