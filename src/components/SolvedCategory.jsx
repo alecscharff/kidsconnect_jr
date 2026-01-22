@@ -7,6 +7,11 @@ const colorClasses = {
   purple: 'bg-solved-purple',
 }
 
+// Check if a string is an emoji (not plain text)
+function isEmoji(str) {
+  return !/^[A-Z]{2,4}$/.test(str)
+}
+
 function SolvedCategory({ category }) {
   const bgColor = colorClasses[category.color] || 'bg-gray-400'
 
@@ -26,10 +31,21 @@ function SolvedCategory({ category }) {
       <div className="text-3xl sm:text-4xl mb-1">
         {category.categoryEmoji}
       </div>
-      <div className="text-2xl sm:text-3xl flex justify-center gap-2">
-        {category.items.map((emoji, idx) => (
-          <span key={idx}>{emoji}</span>
-        ))}
+      <div className="flex justify-center gap-2 items-center">
+        {category.items.map((item, idx) => {
+          const isText = !isEmoji(item)
+          return (
+            <span
+              key={idx}
+              className={isText
+                ? 'text-lg sm:text-xl font-bold text-gray-800'
+                : 'text-2xl sm:text-3xl'
+              }
+            >
+              {item}
+            </span>
+          )
+        })}
       </div>
     </motion.div>
   )

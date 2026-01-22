@@ -1,13 +1,14 @@
 // Emoji-based puzzles for kids who can't read yet
-// Each category has a visual icon and 4 emoji items
+// Some categories mix 3-letter decodable words with emojis to help early readers
+// Each category has a visual icon and 4 items (text or emoji)
 
 export const PUZZLES = [
   // DIFFICULTY 1 - Yellow (Easiest) - Very obvious groupings
   {
     categoryEmoji: '🐾',
-    categoryName: 'Pets',
+    categoryName: 'Furry Friends',
     difficulty: 1,
-    items: ['🐕', '🐈', '🐹', '🐠'],
+    items: ['CAT', 'RAT', '🐕', '🐷'], // cat, rat as words + dog, pig as emoji
   },
   {
     categoryEmoji: '🍎',
@@ -17,7 +18,7 @@ export const PUZZLES = [
   },
   {
     categoryEmoji: '🔴',
-    categoryName: 'Circles',
+    categoryName: 'Colored Dots',
     difficulty: 1,
     items: ['🔴', '🟠', '🟡', '🟢'],
   },
@@ -34,24 +35,42 @@ export const PUZZLES = [
     items: ['🌸', '🌺', '🌻', '🌷'],
   },
   {
-    categoryEmoji: '⭐',
-    categoryName: 'Sky Things',
+    categoryEmoji: '🐔',
+    categoryName: 'Farm Birds',
     difficulty: 1,
-    items: ['⭐', '🌙', '☀️', '⛅'],
+    items: ['HEN', '🦆', '🐓', '🦃'],
+  },
+  {
+    categoryEmoji: '❤️',
+    categoryName: 'Red Things',
+    difficulty: 1,
+    items: ['🍎', '❤️', '🌹', '🍓'],
+  },
+  {
+    categoryEmoji: '⭐',
+    categoryName: 'In the Sky',
+    difficulty: 1,
+    items: ['SUN', '🌙', '⭐', '⛅'],
   },
 
   // DIFFICULTY 2 - Green (Medium)
   {
-    categoryEmoji: '🚗',
-    categoryName: 'Vehicles',
+    categoryEmoji: '☕',
+    categoryName: 'Drink Holders',
     difficulty: 2,
-    items: ['🚗', '🚌', '🚁', '🚂'],
+    items: ['CUP', 'MUG', '🫖', '🥤'],
+  },
+  {
+    categoryEmoji: '✈️',
+    categoryName: 'Flying Things',
+    difficulty: 2,
+    items: ['JET', '🚁', '🪁', '🎈'],
   },
   {
     categoryEmoji: '🐛',
     categoryName: 'Bugs',
     difficulty: 2,
-    items: ['🐛', '🦋', '🐝', '🐞'],
+    items: ['BUG', 'ANT', '🐝', '🐞'],
   },
   {
     categoryEmoji: '🏀',
@@ -61,9 +80,9 @@ export const PUZZLES = [
   },
   {
     categoryEmoji: '🍕',
-    categoryName: 'Food',
+    categoryName: 'Yummy Food',
     difficulty: 2,
-    items: ['🍕', '🍔', '🌭', '🍟'],
+    items: ['HAM', '🍕', '🍔', '🌭'],
   },
   {
     categoryEmoji: '🎵',
@@ -73,35 +92,47 @@ export const PUZZLES = [
   },
   {
     categoryEmoji: '🌊',
-    categoryName: 'Ocean',
+    categoryName: 'Ocean Life',
     difficulty: 2,
-    items: ['🌊', '🐚', '🦀', '🐙'],
+    items: ['🐟', '🐚', '🦀', '🐙'],
+  },
+  {
+    categoryEmoji: '📦',
+    categoryName: 'Containers',
+    difficulty: 2,
+    items: ['BOX', 'BAG', '🎒', '🧺'],
   },
 
   // DIFFICULTY 3 - Blue (Hard)
   {
-    categoryEmoji: '🏠',
-    categoryName: 'Buildings',
+    categoryEmoji: '🚌',
+    categoryName: 'Road Vehicles',
     difficulty: 3,
-    items: ['🏠', '🏫', '🏥', '🏪'],
+    items: ['BUS', 'CAB', 'VAN', '🚗'],
   },
   {
-    categoryEmoji: '🧸',
-    categoryName: 'Toys',
+    categoryEmoji: '🛁',
+    categoryName: 'Bath Time',
     difficulty: 3,
-    items: ['🧸', '🎮', '🪀', '🎨'],
+    items: ['TUB', '🧼', '🚿', '🧴'],
+  },
+  {
+    categoryEmoji: '🦊',
+    categoryName: 'Forest Animals',
+    difficulty: 3,
+    items: ['FOX', '🐺', '🦝', '🦨'],
   },
   {
     categoryEmoji: '🍦',
     categoryName: 'Sweet Treats',
     difficulty: 3,
-    items: ['🍦', '🍪', '🧁', '🍬'],
+    items: ['GUM', '🍪', '🧁', '🍬'],
   },
   {
-    categoryEmoji: '🌲',
-    categoryName: 'Nature',
+    categoryEmoji: '🐸',
+    categoryName: 'Hoppers',
     difficulty: 3,
-    items: ['🌲', '🌴', '🍄', '🌵'],
+    items: ['🐸', '🦘', '🐰', '🦗'],
   },
   {
     categoryEmoji: '👕',
@@ -115,19 +146,25 @@ export const PUZZLES = [
     difficulty: 3,
     items: ['🦁', '🐘', '🦒', '🦓'],
   },
-
-  // DIFFICULTY 4 - Purple (Tricky)
   {
-    categoryEmoji: '❤️',
-    categoryName: 'Hearts',
-    difficulty: 4,
-    items: ['❤️', '🧡', '💛', '💚'],
+    categoryEmoji: '🔨',
+    categoryName: 'Tools',
+    difficulty: 3,
+    items: ['🔨', '🪚', '🔧', '🪛'],
   },
+
+  // DIFFICULTY 4 - Purple (Tricky) - Less obvious connections
   {
     categoryEmoji: '🐣',
     categoryName: 'Baby Animals',
     difficulty: 4,
-    items: ['🐣', '🐥', '🐤', '🐔'],
+    items: ['CUB', 'PUP', '🐣', '🐱'],
+  },
+  {
+    categoryEmoji: '🦇',
+    categoryName: 'Night Animals',
+    difficulty: 4,
+    items: ['BAT', '🦉', '🐺', '🦔'],
   },
   {
     categoryEmoji: '🎃',
@@ -142,16 +179,28 @@ export const PUZZLES = [
     items: ['🎄', '🎅', '⛄', '🎁'],
   },
   {
-    categoryEmoji: '🌈',
-    categoryName: 'Colorful',
+    categoryEmoji: '🥚',
+    categoryName: 'Breakfast',
     difficulty: 4,
-    items: ['🌈', '🦜', '🎨', '🦋'],
+    items: ['EGG', 'JAM', '🧇', '🥞'],
   },
   {
-    categoryEmoji: '😴',
-    categoryName: 'Bedtime',
+    categoryEmoji: '🔥',
+    categoryName: 'Hot Things',
     difficulty: 4,
-    items: ['😴', '🛏️', '🌙', '⭐'],
+    items: ['HOT', 'SUN', '🔥', '🌶️'],
+  },
+  {
+    categoryEmoji: '🏃',
+    categoryName: 'Moving Fast',
+    difficulty: 4,
+    items: ['RUN', 'JOG', '🚀', '🐆'],
+  },
+  {
+    categoryEmoji: '🤗',
+    categoryName: 'Loving',
+    difficulty: 4,
+    items: ['HUG', '💕', '😘', '🥰'],
   },
 ]
 
