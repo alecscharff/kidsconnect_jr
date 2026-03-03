@@ -7,7 +7,7 @@ const colorClasses = {
   purple: 'bg-solved-purple',
 }
 
-function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
+function GameOverModal({ status, onPlayAgain, onChangeLevel, onDismiss, solvedCategories }) {
   const isWin = status === 'won'
 
   return (
@@ -26,9 +26,9 @@ function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
         className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <motion.div 
+        <motion.div
           className="text-7xl sm:text-8xl mb-4"
-          animate={{ 
+          animate={{
             scale: [1, 1.2, 1],
             rotate: isWin ? [0, 10, -10, 0] : [0, -5, 5, 0]
           }}
@@ -45,7 +45,7 @@ function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
           {solvedCategories.map((cat) => (
             <div
               key={cat.categoryName}
-              className={`rounded-xl py-2 px-3 text-2xl ${colorClasses[cat.color] || ''}`}
+              className={`rounded-xl py-2 px-3 text-xl ${colorClasses[cat.color] || ''}`}
             >
               {cat.categoryEmoji} {cat.items.join(' ')}
             </div>
@@ -61,13 +61,28 @@ function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
               w-full py-4 rounded-2xl
               bg-gradient-to-r from-green-400 to-blue-500
               text-white text-3xl
-              font-bold
-              shadow-lg
+              font-bold shadow-lg
               flex items-center justify-center gap-2
             "
           >
             🔄 <span className="text-2xl">Play Again!</span> 🎮
           </motion.button>
+
+          <motion.button
+            onClick={onChangeLevel}
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            className="
+              w-full py-3 rounded-2xl
+              bg-gradient-to-r from-violet-400 to-purple-500
+              text-white text-2xl
+              font-bold shadow-lg
+              flex items-center justify-center gap-2
+            "
+          >
+            🗺️ <span className="text-xl">Change Level</span>
+          </motion.button>
+
           <motion.button
             onClick={onDismiss}
             whileTap={{ scale: 0.9 }}
@@ -75,9 +90,7 @@ function GameOverModal({ status, onPlayAgain, onDismiss, solvedCategories }) {
             className="
               w-full py-3 rounded-2xl
               bg-white text-gray-700 text-2xl
-              font-bold
-              border-3 border-gray-300
-              shadow-md
+              font-bold border-2 border-gray-300 shadow-md
               flex items-center justify-center gap-2
             "
           >

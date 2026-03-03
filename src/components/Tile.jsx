@@ -1,10 +1,15 @@
 import { motion } from 'framer-motion'
 
-// Check if a string is an emoji (not plain text)
+// Returns true if the string is an emoji/symbol rather than a plain word
 function isEmoji(str) {
-  // Emojis are typically longer than 3 chars when encoded, or contain special unicode
-  // Simple check: if it's 3 uppercase letters, it's a word
-  return !/^[A-Z]{2,4}$/.test(str)
+  return !/^[A-Z]{2,6}$/.test(str)
+}
+
+// Pick font size based on word length so longer words still fit the tile
+function textSizeClass(word) {
+  if (word.length <= 3) return 'text-2xl sm:text-3xl'
+  if (word.length <= 4) return 'text-xl sm:text-2xl'
+  return 'text-base sm:text-lg'
 }
 
 function Tile({ tile, isSelected, onClick, disabled }) {
@@ -18,17 +23,15 @@ function Tile({ tile, isSelected, onClick, disabled }) {
     shadow-lg
   `
 
-  // Text tiles get smaller font, emojis stay large
   const sizeClasses = isText
-    ? 'text-2xl sm:text-3xl md:text-4xl font-bold'
-    : 'text-4xl sm:text-5xl md:text-6xl'
+    ? `${textSizeClass(tile.emoji)} font-bold`
+    : 'text-4xl sm:text-5xl'
 
   const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : ''
   const selectedClasses = isSelected
     ? 'bg-tile-selected scale-95 shadow-inner'
     : 'bg-white hover:scale-105 hover:shadow-xl active:scale-95'
 
-  // Text tiles get colored text when selected
   const textColorClass = isText
     ? (isSelected ? 'text-white' : 'text-gray-800')
     : ''

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { PUZZLES, DIFFICULTY_COLORS } from '../data/puzzles'
 
 const MAX_MISTAKES = 4
@@ -13,42 +13,40 @@ function shuffleArray(array) {
   return shuffled
 }
 
-// Select one random puzzle from each difficulty level
-function selectRandomPuzzles() {
-  const byDifficulty = { 1: [], 2: [], 3: [], 4: [] }
-  
-  PUZZLES.forEach(puzzle => {
-    if (byDifficulty[puzzle.difficulty]) {
-      byDifficulty[puzzle.difficulty].push(puzzle)
-    }
-  })
+// Select 4 puzzles for a given phonics level:
+//   level 0 → 4 from level 0
+//   level 1+ → 3 from target level + 1 from a lower level
+function selectPuzzlesForLevel(level) {
+  const levelPuzzles = PUZZLES.filter(p => p.phonicsLevel === level)
+  const lowerPuzzles = PUZZLES.filter(p => p.phonicsLevel < level)
 
-  const selected = []
-  for (let d = 1; d <= 4; d++) {
-    const pool = byDifficulty[d]
-    if (pool.length > 0) {
-      const idx = Math.floor(Math.random() * pool.length)
-      selected.push({
-        ...pool[idx],
-        color: DIFFICULTY_COLORS[d],
-      })
-    }
+  let selected
+  if (level === 0 || lowerPuzzles.length === 0) {
+    selected = shuffleArray(levelPuzzles).slice(0, 4)
+  } else {
+    const fromLevel = shuffleArray(levelPuzzles).slice(0, 3)
+    const fromLower = shuffleArray(lowerPuzzles).slice(0, 1)
+    selected = [...fromLevel, ...fromLower]
   }
 
-  return selected
+  // Assign visual difficulty colors (yellow/green/blue/purple) by random position
+  return shuffleArray(selected).map((p, i) => ({
+    ...p,
+    color: DIFFICULTY_COLORS[i + 1],
+  }))
 }
 
 // Create tiles from categories
 function createTiles(categories) {
   const tiles = []
   categories.forEach(cat => {
-    cat.items.forEach(emoji => {
+    cat.items.forEach(item => {
       tiles.push({
-        id: `${cat.categoryName}-${emoji}`,
-        emoji,
+        id: `${cat.categoryName}-${item}`,
+        emoji: item,
         categoryName: cat.categoryName,
         categoryEmoji: cat.categoryEmoji,
-        difficulty: cat.difficulty,
+        phonicsLevel: cat.phonicsLevel,
         color: cat.color,
       })
     })
@@ -57,6 +55,7 @@ function createTiles(categories) {
 }
 
 export function useGameState() {
+  const [currentLevel, setCurrentLevel] = useState(null) // null = show level select
   const [gameCategories, setGameCategories] = useState([])
   const [tiles, setTiles] = useState([])
   const [selectedTiles, setSelectedTiles] = useState([])
@@ -67,9 +66,10 @@ export function useGameState() {
   const [previousGuesses, setPreviousGuesses] = useState([])
   const [showModal, setShowModal] = useState(false)
 
-  // Initialize game
-  const initializeGame = useCallback(() => {
-    const selected = selectRandomPuzzles()
+  // Start a new game at the given level
+  const startLevel = useCallback((level) => {
+    const selected = selectPuzzlesForLevel(level)
+    setCurrentLevel(level)
     setGameCategories(selected)
     setTiles(shuffleArray(createTiles(selected)))
     setSelectedTiles([])
@@ -81,22 +81,25 @@ export function useGameState() {
     setToast(null)
   }, [])
 
-  // Start game on mount
-  useEffect(() => {
-    initializeGame()
-  }, [initializeGame])
+  // Replay the same level
+  const resetGame = useCallback(() => {
+    if (currentLevel !== null) startLevel(currentLevel)
+  }, [currentLevel, startLevel])
+
+  // Return to level select screen
+  const goToLevelSelect = useCallback(() => {
+    setCurrentLevel(null)
+    setShowModal(false)
+    setToast(null)
+  }, [])
 
   // Select/deselect a tile
   const selectTile = useCallback((tileId) => {
     if (gameStatus !== 'playing') return
-
     setSelectedTiles(prev => {
-      if (prev.includes(tileId)) {
-        return prev.filter(id => id !== tileId)
-      } else {
-        if (prev.length >= 4) return prev
-        return [...prev, tileId]
-      }
+      if (prev.includes(tileId)) return prev.filter(id => id !== tileId)
+      if (prev.length >= 4) return prev
+      return [...prev, tileId]
     })
   }, [gameStatus])
 
@@ -115,7 +118,7 @@ export function useGameState() {
     if (selectedTiles.length !== 4 || gameStatus !== 'playing') return
 
     const selectedObjects = tiles.filter(t => selectedTiles.includes(t.id))
-    
+
     // Check for duplicate guess
     const guessKey = [...selectedTiles].sort().join(',')
     if (previousGuesses.includes(guessKey)) {
@@ -136,7 +139,6 @@ export function useGameState() {
     if (categories.length === 1 && maxCount === 4) {
       // Correct!
       const solved = gameCategories.find(c => c.categoryName === categories[0])
-      
       setTiles(prev => prev.filter(t => !selectedTiles.includes(t.id)))
       setSolvedCategories(prev => {
         const newSolved = [...prev, solved]
@@ -153,17 +155,13 @@ export function useGameState() {
       // Wrong
       const newMistakes = mistakes + 1
       setMistakes(newMistakes)
-
-      if (maxCount === 3) {
-        setToast('☝️')
-      }
-
+      if (maxCount === 3) setToast('☝️')
       setSelectedTiles([])
 
       if (newMistakes >= MAX_MISTAKES) {
         const remaining = gameCategories
           .filter(c => !solvedCategories.find(s => s.categoryName === c.categoryName))
-          .sort((a, b) => a.difficulty - b.difficulty)
+          .sort((a, b) => a.phonicsLevel - b.phonicsLevel)
         setSolvedCategories(prev => [...prev, ...remaining])
         setTiles([])
         setTimeout(() => {
@@ -192,6 +190,7 @@ export function useGameState() {
   }, [toast])
 
   return {
+    currentLevel,
     tiles,
     selectedTiles,
     solvedCategories,
@@ -203,7 +202,9 @@ export function useGameState() {
     deselectAll,
     shuffle,
     submitGuess,
-    resetGame: initializeGame,
+    startLevel,
+    resetGame,
+    goToLevelSelect,
     dismissToast,
     dismissModal,
     openModal,

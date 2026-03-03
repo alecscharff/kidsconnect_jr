@@ -9,7 +9,7 @@ const colorClasses = {
 
 // Check if a string is an emoji (not plain text)
 function isEmoji(str) {
-  return !/^[A-Z]{2,4}$/.test(str)
+  return !/^[A-Z]{2,6}$/.test(str)
 }
 
 function SolvedCategory({ category }) {
