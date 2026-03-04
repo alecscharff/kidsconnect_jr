@@ -2,6 +2,10 @@
 // phonicsLevel: 0=emojis, 1=short vowel CVC, 2=digraphs, 3=blends, 4=-ing, 5=oo sounds, 6=sneaky e
 // Each category has 3 items (3x3 grid)
 // At each game level, 2 categories come from that level + 1 from a lower level
+//
+// IMPORTANT: No emoji may appear in more than one category across levels that
+// can be mixed in the same game (target level + all lower levels).
+// All categoryNames must be globally unique.
 
 export const LEVEL_INFO = [
   {
@@ -112,10 +116,11 @@ export const PUZZLES = [
     items: ['🍕', '🍔', '🌭'],
   },
   {
+    // 🐞 ladybug instead of 🐝 bee (bee used in Bee Things L4)
     categoryEmoji: '🦋',
     categoryName: 'Colorful Bugs',
     phonicsLevel: 0,
-    items: ['🐛', '🐝', '🦋'],
+    items: ['🐛', '🐞', '🦋'],
   },
   {
     categoryEmoji: '🍦',
@@ -169,10 +174,11 @@ export const PUZZLES = [
     items: ['MOP', 'TOP', 'POP'],
   },
   {
+    // TUG (tug-of-war) instead of MUG (adult vocab — kids say "cup")
     categoryEmoji: '🐛',
     categoryName: 'Rhymes with BUG',
     phonicsLevel: 1,
-    items: ['HUG', 'MUG', 'RUG'],
+    items: ['HUG', 'TUG', 'RUG'],
   },
   {
     categoryEmoji: '🐔',
@@ -200,10 +206,11 @@ export const PUZZLES = [
     items: ['TUB', '🧼', '🚿'],
   },
   {
+    // 🐹🐾 instead of 🐱🐰 (those are in Pets L0 — would duplicate)
     categoryEmoji: '🐾',
     categoryName: 'Furry Pets',
     phonicsLevel: 1,
-    items: ['PUP', '🐱', '🐰'],
+    items: ['PUP', '🐹', '🐾'],
   },
   {
     categoryEmoji: '🦊',
@@ -218,10 +225,11 @@ export const PUZZLES = [
     items: ['BOX', 'BAG', '🎒'],
   },
   {
+    // 🌶️ instead of ☀️ (sun is in "In the Sky" L0 — would duplicate)
     categoryEmoji: '🔥',
     categoryName: 'Hot Stuff!',
     phonicsLevel: 1,
-    items: ['HOT', '🔥', '☀️'],
+    items: ['HOT', '🔥', '🌶️'],
   },
   {
     categoryEmoji: '✈️',
@@ -238,28 +246,37 @@ export const PUZZLES = [
     items: ['FISH', 'SHIP', '🌊'],
   },
   {
+    // 🛁 instead of 🚿 (shower is in Bath Time L1 — would duplicate)
     categoryEmoji: '🧼',
     categoryName: 'Getting Clean',
     phonicsLevel: 2,
-    items: ['BATH', 'WASH', '🚿'],
+    items: ['BATH', 'WASH', '🛁'],
   },
   {
-    categoryEmoji: '✏️',
-    categoryName: 'At School',
+    // Replaced "At School" (MATH, CHALK, 📐) — chalk is fading from
+    // 2026 classrooms (smartboards), 📐 set-square is unrecognizable
+    // to kindergartners. CHOP and DISH are concrete kitchen words
+    // with ch/sh digraphs that kids hear every day.
+    categoryEmoji: '🍽️',
+    categoryName: 'Chef Time',
     phonicsLevel: 2,
-    items: ['MATH', 'CHALK', '📐'],
+    items: ['CHOP', 'DISH', '🍽️'],
   },
   {
+    // Removed SHED (not kindergarten vocab — many kids have never
+    // seen a shed). CHICK + barn animal emojis makes the theme obvious.
     categoryEmoji: '🐄',
     categoryName: 'At the Barn',
     phonicsLevel: 2,
-    items: ['SHED', 'CHICK', '🐄'],
+    items: ['CHICK', '🐑', '🐄'],
   },
   {
+    // Removed SHIN (kids say "leg" not "shin"). CHIN + body-part
+    // emojis makes the theme immediately clear.
     categoryEmoji: '😊',
     categoryName: 'On Your Body',
     phonicsLevel: 2,
-    items: ['CHIN', 'SHIN', '🦷'],
+    items: ['CHIN', '🦷', '💪'],
   },
   {
     categoryEmoji: '🍟',
@@ -276,10 +293,12 @@ export const PUZZLES = [
     items: ['FROG', 'CRAB', '🐢'],
   },
   {
+    // SKIP + SPIN (both playground actions with blends sk/sp).
+    // SLED moved to Winter Time where it belongs.
     categoryEmoji: '🛝',
     categoryName: 'Playground Fun',
     phonicsLevel: 3,
-    items: ['SLED', 'SKIP', '🛝'],
+    items: ['SKIP', 'SPIN', '🛝'],
   },
   {
     categoryEmoji: '🥁',
@@ -288,22 +307,29 @@ export const PUZZLES = [
     items: ['DRUM', 'CLAP', '🎸'],
   },
   {
-    categoryEmoji: '🍇',
-    categoryName: 'Yummy Fruits',
+    // Replaced "Yummy Fruits" (PLUM too obscure for kids, GRAPE has
+    // a sneaky-E that kids at level 3 haven't learned yet).
+    // DRIP/SWIM are concrete blend words every kid knows.
+    categoryEmoji: '💦',
+    categoryName: 'Splish Splash!',
     phonicsLevel: 3,
-    items: ['PLUM', 'GRAPE', '🫐'],
+    items: ['DRIP', 'SWIM', '💦'],
   },
   {
+    // SLED (from Playground Fun) + SNOW. ❄️ instead of ⛄ (snowman
+    // is in Holiday Fun L0 — would duplicate).
     categoryEmoji: '❄️',
     categoryName: 'Winter Time',
     phonicsLevel: 3,
-    items: ['SNOW', 'FROST', '⛄'],
+    items: ['SNOW', 'SLED', '❄️'],
   },
   {
-    categoryEmoji: '🌽',
-    categoryName: 'On the Farm',
+    // Replaced "On the Farm" (TROT and CROP are not kindergarten
+    // vocabulary). TRIP and STOP are everyday words with tr/st blends.
+    categoryEmoji: '🚦',
+    categoryName: 'Going Places',
     phonicsLevel: 3,
-    items: ['TROT', 'CROP', '🌽'],
+    items: ['TRIP', 'STOP', '🚦'],
   },
 
   // ─── LEVEL 4: -ING Word Family ───────────────────────────────────────────────
@@ -314,10 +340,12 @@ export const PUZZLES = [
     items: ['RING', 'SING', 'KING'],
   },
   {
+    // Removed FLING (kids say "throw"). SWING + park emojis
+    // makes the theme crystal clear.
     categoryEmoji: '🤸',
     categoryName: 'At the Park',
     phonicsLevel: 4,
-    items: ['SWING', 'FLING', '🤸'],
+    items: ['SWING', '🏃', '🤸'],
   },
   {
     categoryEmoji: '🐝',
@@ -326,18 +354,23 @@ export const PUZZLES = [
     items: ['STING', '🐝', '🍯'],
   },
   {
-    categoryEmoji: '🌸',
+    // Removed BRING (doesn't relate to spring). 🌷 tulip instead of
+    // 🌸 cherry blossom (used in Garden Flowers L0 — would duplicate).
+    // 🐣 baby chick = spring animal.
+    categoryEmoji: '🌷',
     categoryName: 'Spring Time',
     phonicsLevel: 4,
-    items: ['SPRING', 'BRING', '🌸'],
+    items: ['SPRING', '🌷', '🐣'],
   },
 
   // ─── LEVEL 5: OO Sounds ──────────────────────────────────────────────────────
   {
+    // HOOT instead of ZOOM (zoom doesn't connect to "night sky").
+    // Owls hoot at night — every kid knows this! 🦉 anchors it.
     categoryEmoji: '🌙',
-    categoryName: 'Night Sky',
+    categoryName: 'Night Sounds',
     phonicsLevel: 5,
-    items: ['MOON', 'ZOOM', '🚀'],
+    items: ['MOON', 'HOOT', '🦉'],
   },
   {
     categoryEmoji: '🍳',
@@ -366,10 +399,11 @@ export const PUZZLES = [
 
   // ─── LEVEL 6: Sneaky E / Silent E ────────────────────────────────────────────
   {
-    categoryEmoji: '🎂',
+    // 🧁 cupcake instead of 🎂 cake (used in Sweet Treats L0)
+    categoryEmoji: '🧁',
     categoryName: 'Rhymes with CAKE',
     phonicsLevel: 6,
-    items: ['CAKE', 'LAKE', '🎂'],
+    items: ['CAKE', 'LAKE', '🧁'],
   },
   {
     categoryEmoji: '🥾',
@@ -378,10 +412,11 @@ export const PUZZLES = [
     items: ['BIKE', 'HIKE', '🥾'],
   },
   {
-    categoryEmoji: '🍦',
+    // 🦴 bone instead of 🍦 ice cream (used in Sweet Treats L0)
+    categoryEmoji: '🦴',
     categoryName: 'Rhymes with BONE',
     phonicsLevel: 6,
-    items: ['BONE', 'CONE', '🍦'],
+    items: ['BONE', 'CONE', '🦴'],
   },
   {
     categoryEmoji: '🐭',
@@ -390,10 +425,13 @@ export const PUZZLES = [
     items: ['RICE', 'MICE', '🍚'],
   },
   {
-    categoryEmoji: '🎵',
-    categoryName: 'Music Words',
+    // Replaced "Music Words" (TUNE and NOTE are not kindergarten
+    // vocabulary). KITE and BITE are concrete sneaky-E words
+    // every 6-year-old knows.
+    categoryEmoji: '🪁',
+    categoryName: 'Rhymes with KITE',
     phonicsLevel: 6,
-    items: ['TUNE', 'NOTE', '🎵'],
+    items: ['KITE', 'BITE', '🪁'],
   },
 ]
 
