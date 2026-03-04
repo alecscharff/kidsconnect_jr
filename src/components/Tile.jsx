@@ -7,9 +7,9 @@ function isEmoji(str) {
 
 // Pick font size based on word length so longer words still fit the tile
 function textSizeClass(word) {
-  if (word.length <= 3) return 'text-2xl sm:text-3xl'
-  if (word.length <= 4) return 'text-xl sm:text-2xl'
-  return 'text-base sm:text-lg'
+  if (word.length <= 3) return 'text-3xl sm:text-4xl'
+  if (word.length <= 4) return 'text-2xl sm:text-3xl'
+  return 'text-lg sm:text-xl'
 }
 
 function Tile({ tile, isSelected, onClick, disabled }) {
@@ -25,7 +25,7 @@ function Tile({ tile, isSelected, onClick, disabled }) {
 
   const sizeClasses = isText
     ? `${textSizeClass(tile.emoji)} font-bold`
-    : 'text-4xl sm:text-5xl'
+    : 'text-5xl sm:text-6xl'
 
   const disabledClasses = disabled ? 'cursor-not-allowed opacity-50' : ''
   const selectedClasses = isSelected

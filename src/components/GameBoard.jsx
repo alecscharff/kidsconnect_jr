@@ -6,7 +6,7 @@ function GameBoard({ tiles, selectedTiles, onTileClick, gameStatus }) {
 
   return (
     <motion.div
-      className="w-full grid grid-cols-4 gap-2 sm:gap-3"
+      className="w-full grid grid-cols-3 gap-3 sm:gap-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}

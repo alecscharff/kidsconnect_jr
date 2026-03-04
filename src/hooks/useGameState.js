@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { PUZZLES, DIFFICULTY_COLORS } from '../data/puzzles'
 
-const MAX_MISTAKES = 4
+const MAX_MISTAKES = 3
 
 // Shuffle array using Fisher-Yates
 function shuffleArray(array) {
@@ -13,18 +13,18 @@ function shuffleArray(array) {
   return shuffled
 }
 
-// Select 4 puzzles for a given phonics level:
-//   level 0 → 4 from level 0
-//   level 1+ → 3 from target level + 1 from a lower level
+// Select 3 puzzles for a given phonics level (3x3 grid):
+//   level 0 → 3 from level 0
+//   level 1+ → 2 from target level + 1 from a lower level
 function selectPuzzlesForLevel(level) {
   const levelPuzzles = PUZZLES.filter(p => p.phonicsLevel === level)
   const lowerPuzzles = PUZZLES.filter(p => p.phonicsLevel < level)
 
   let selected
   if (level === 0 || lowerPuzzles.length === 0) {
-    selected = shuffleArray(levelPuzzles).slice(0, 4)
+    selected = shuffleArray(levelPuzzles).slice(0, 3)
   } else {
-    const fromLevel = shuffleArray(levelPuzzles).slice(0, 3)
+    const fromLevel = shuffleArray(levelPuzzles).slice(0, 2)
     const fromLower = shuffleArray(lowerPuzzles).slice(0, 1)
     selected = [...fromLevel, ...fromLower]
   }
@@ -98,7 +98,7 @@ export function useGameState() {
     if (gameStatus !== 'playing') return
     setSelectedTiles(prev => {
       if (prev.includes(tileId)) return prev.filter(id => id !== tileId)
-      if (prev.length >= 4) return prev
+      if (prev.length >= 3) return prev
       return [...prev, tileId]
     })
   }, [gameStatus])
@@ -115,7 +115,7 @@ export function useGameState() {
 
   // Submit guess
   const submitGuess = useCallback(() => {
-    if (selectedTiles.length !== 4 || gameStatus !== 'playing') return
+    if (selectedTiles.length !== 3 || gameStatus !== 'playing') return
 
     const selectedObjects = tiles.filter(t => selectedTiles.includes(t.id))
 
@@ -136,13 +136,13 @@ export function useGameState() {
     const categories = Object.keys(categoryCount)
     const maxCount = Math.max(...Object.values(categoryCount))
 
-    if (categories.length === 1 && maxCount === 4) {
+    if (categories.length === 1 && maxCount === 3) {
       // Correct!
       const solved = gameCategories.find(c => c.categoryName === categories[0])
       setTiles(prev => prev.filter(t => !selectedTiles.includes(t.id)))
       setSolvedCategories(prev => {
         const newSolved = [...prev, solved]
-        if (newSolved.length === 4) {
+        if (newSolved.length === 3) {
           setTimeout(() => {
             setGameStatus('won')
             setShowModal(true)
@@ -155,7 +155,7 @@ export function useGameState() {
       // Wrong
       const newMistakes = mistakes + 1
       setMistakes(newMistakes)
-      if (maxCount === 3) setToast('☝️')
+      if (maxCount === 2) setToast('☝️')
       setSelectedTiles([])
 
       if (newMistakes >= MAX_MISTAKES) {
